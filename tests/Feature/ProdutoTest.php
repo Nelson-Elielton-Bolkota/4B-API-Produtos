@@ -66,4 +66,25 @@ class ProdutoTest extends TestCase
         ]);
     }
 
+    public function test_nao_atualiza_produto_com_preco_abaixo_da_margem_minima(): void
+    {
+        $produto = Produto::create([
+            'nome' => 'Areia',
+            'preco_custo' => 100,
+            'preco' => 120,
+        ]);
+
+        $response = $this->putJson("/api/produtos/{$produto->id}", [
+            'preco' => 105, 
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['preco']);
+
+        $this->assertDatabaseHas('produtos', [
+            'id' => $produto->id,
+            'preco' => 120,
+        ]);
+    }
+
 }
