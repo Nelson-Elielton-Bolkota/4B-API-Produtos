@@ -26,4 +26,20 @@ class ProdutoTest extends TestCase
         $this->assertDatabaseHas('produtos', [
             'nome' => 'Lajota']);
     }
+
+    public function test_nao_cria_produto_com_preco_abaixo_da_margem_minima(): void
+    {
+        $response = $this->postJson('/api/produtos', [
+            'nome' => 'Cimento',
+            'preco_custo' => 100,
+            'preco' => 105,
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['preco']);
+
+        $this->assertDatabaseMissing('produtos', [
+            'nome' => 'Cimento',
+        ]);
+    }
 }
