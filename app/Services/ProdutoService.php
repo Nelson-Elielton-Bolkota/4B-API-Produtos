@@ -26,4 +26,14 @@ class ProdutoService
             ]);
         }
     }
+    public function update(Produto $produto, array $dados): Produto
+    {
+        $preco = $dados['preco'] ?? $produto->preco;
+
+        $precoCusto = $dados['preco_custo'] ?? $produto->preco_custo;
+        $this->verificarMargem($preco, $precoCusto);
+        $produto->update($dados);
+        
+        return $produto;
+    }
 }
