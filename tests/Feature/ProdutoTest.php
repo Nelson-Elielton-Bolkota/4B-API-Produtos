@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Produto;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -42,4 +43,27 @@ class ProdutoTest extends TestCase
             'nome' => 'Cimento',
         ]);
     }
+
+    public function test_atualiza_produto_com_sucesso(): void
+    {
+        $produto = Produto::create([
+            'nome' => 'Tijolo',
+            'preco_custo' => 100,
+            'preco' => 120,
+        ]);
+
+        $response = $this->putJson("/api/produtos/{$produto->id}", [
+            'nome' => 'Tijolo Baiano',
+            'preco' => 150,
+        ]);
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('produtos', [
+            'id' => $produto->id,
+            'nome' => 'Tijolo Baiano',
+            'preco' => 150,
+        ]);
+    }
+
 }
